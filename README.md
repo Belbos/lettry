@@ -53,6 +53,18 @@ cd backend
 pytest tests/ -v
 ```
 
+### 한 번에 시작 / 종료 (Windows)
+
+```bat
+:: 백 + 프론트를 각각 새 cmd 창에서 동시에 기동
+dev.bat
+:: 또는 PowerShell
+.\dev.ps1
+
+:: 두 서버 종료 (포트 8000, 3000 + 창 타이틀 기반)
+stop.bat
+```
+
 ## 주요 API
 
 | Method | Path | Description |
