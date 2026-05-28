@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     jwt_secret_key: str = DEFAULT_JWT_SECRET
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 60 * 24
+    # Username auto-promoted to admin on registration, but only while no admin
+    # exists yet (closes the bootstrap window — see routers/auth.py).
+    initial_admin_username: str = ""
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 

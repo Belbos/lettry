@@ -56,3 +56,28 @@ export async function apiFetch<T>(
   }
   return (await res.json()) as T;
 }
+
+/** Multipart upload — lets the browser set the multipart boundary itself. */
+export async function apiUpload<T>(path: string, form: FormData): Promise<T> {
+  const token = getStoredToken();
+  const headers: Record<string, string> = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method: "POST",
+    body: form,
+    headers,
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    let body: unknown;
+    try {
+      body = await res.json();
+    } catch {
+      body = await res.text();
+    }
+    throw new ApiError(res.status, body, `API ${res.status}: ${path}`);
+  }
+  return (await res.json()) as T;
+}

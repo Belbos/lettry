@@ -41,6 +41,14 @@ export function AuthStatus() {
 
   return (
     <div className="flex gap-3 items-center">
+      {user.is_admin && (
+        <Link
+          href="/admin"
+          className="text-sm text-amber-700 font-medium hover:text-amber-800"
+        >
+          관리자
+        </Link>
+      )}
       <span className="text-sm text-slate-700 font-medium">{user.username}</span>
       <button
         onClick={() => {

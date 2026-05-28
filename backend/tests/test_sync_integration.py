@@ -44,7 +44,8 @@ def client():
 
     app.dependency_overrides[get_db] = _get_db
     app.dependency_overrides[get_current_user] = lambda: User(
-        id=1, username="tester", email="tester@e.com", hashed_password="x"
+        id=1, username="tester", email="tester@e.com", hashed_password="x",
+        is_admin=True,
     )
     yield TestClient(app)
     app.dependency_overrides.clear()

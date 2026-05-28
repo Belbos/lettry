@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.config import settings
 from app.database import get_db
 from app.dependencies.auth import get_current_user
 from app.models.user import User
@@ -40,10 +41,21 @@ def register(request: Request, req: RegisterRequest, db: Session = Depends(get_d
             status_code=status.HTTP_409_CONFLICT,
             detail="이미 사용 중인 이메일입니다",
         )
+    # Bootstrap-only admin promotion: grant admin to the configured initial
+    # username, but only while no admin exists yet. This closes the window so
+    # the env var can never be used as a permanent backdoor once set up.
+    grant_admin = False
+    if (
+        settings.initial_admin_username
+        and req.username == settings.initial_admin_username.strip().lower()
+    ):
+        admin_exists = db.scalar(select(User.id).where(User.is_admin.is_(True)))
+        grant_admin = admin_exists is None
     user = User(
         username=req.username,
         email=req.email,
         hashed_password=hash_password(req.password),
+        is_admin=grant_admin,
     )
     db.add(user)
     db.commit()

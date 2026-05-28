@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.dependencies.auth import get_current_user
+from app.dependencies.auth import get_current_admin
 from app.models.lotto_draw import LottoDraw
 from app.models.user import User
 from app.repositories import lotto_repo
@@ -46,7 +46,7 @@ def get_draw(draw_no: int, db: Session = Depends(get_db)):
 async def import_csv_endpoint(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user),
+    user: User = Depends(get_current_admin),
 ):
     if not (file.filename or "").lower().endswith(".csv"):
         raise HTTPException(400, "must be a .csv file")
@@ -66,7 +66,7 @@ async def import_csv_endpoint(
 def sync_endpoint(
     max_fetch: int = 20,
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user),
+    user: User = Depends(get_current_admin),
 ):
     """Pull new lotto draws from 동행복권 since the latest one in DB."""
     if max_fetch < 1 or max_fetch > 200:
