@@ -28,10 +28,13 @@ export default function HomePage() {
   const [result, setResult] = useState<RecommendResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Bumped on each recommend so WinCheck remounts and resets to its button.
+  const [runId, setRunId] = useState(0);
 
   async function handleRecommend() {
     setLoading(true);
     setError(null);
+    setRunId((n) => n + 1);
     try {
       const steps = buildSteps();
       if (steps.length === 0) {
@@ -108,12 +111,6 @@ export default function HomePage() {
           </div>
         )}
 
-        {result && (
-          <div className="flex justify-center">
-            <WinCheck numbers={result.numbers} />
-          </div>
-        )}
-
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-3 text-sm text-center">
             {error}
@@ -129,6 +126,12 @@ export default function HomePage() {
             {loading ? "추천 중..." : "번호 추천 받기"}
           </button>
         </div>
+
+        {result && (
+          <div className="flex justify-center">
+            <WinCheck key={runId} numbers={result.numbers} />
+          </div>
+        )}
       </section>
 
       {result && (
