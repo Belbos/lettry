@@ -67,13 +67,17 @@ stop.bat
 
 ## 주요 API
 
-| Method | Path | Description |
-|---|---|---|
-| POST | `/api/lotto/import-csv` | CSV 업로드 |
-| POST | `/api/lotto/sync` | 동행복권에서 신규 회차 증분 동기화 |
-| GET | `/api/lotto/draws` | 회차 목록 |
-| GET | `/api/statistics/{number-frequency,hot,cold,summary}` | 통계 |
-| POST | `/api/recommend` | 사용자 설정 기반 6개 번호 추천 |
+| Method | Path | Description | 인증 |
+|---|---|---|---|
+| POST | `/api/auth/register` | 회원가입 | - |
+| POST | `/api/auth/login` | 로그인 (JWT 발급) | - |
+| POST | `/api/lotto/import-csv` | CSV 업로드 | 필요 |
+| POST | `/api/lotto/sync` | 동행복권에서 신규 회차 증분 동기화 | 필요 |
+| GET | `/api/lotto/draws` | 회차 목록 | - |
+| GET | `/api/statistics/{number-frequency,hot,cold,summary}` | 통계 | - |
+| POST | `/api/recommend` | 사용자 설정 기반 6개 번호 추천 | - |
+| GET/POST/PUT/DELETE | `/api/presets` | 프리셋 관리 (계정별) | 필요 |
+| GET/POST/DELETE | `/api/history` | 추천 이력 (계정별) | 필요 |
 
 ## 폴더 구조
 

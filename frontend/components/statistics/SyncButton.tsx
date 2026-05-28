@@ -32,6 +32,8 @@ export function SyncButton({ onSuccess }: Props) {
           setError(
             `동행복권 서버에 자동 요청이 차단되었습니다. (잠시 후 다시 시도하거나 CSV import 사용)\n원본 오류: ${detail}`,
           );
+        } else if (e.status === 401 || e.status === 403) {
+          setError("데이터 동기화는 로그인 후 이용할 수 있습니다.");
         } else {
           setError(detail);
         }
