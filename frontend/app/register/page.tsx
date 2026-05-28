@@ -56,11 +56,11 @@ export default function RegisterPage() {
   const emailValid =
     !email || /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(email);
   const passwordsMatch = !passwordConfirm || password === passwordConfirm;
-  const passwordLong = !password || password.length >= 6;
+  const passwordLong = !password || password.length >= 8;
 
   const canSubmit =
     username.length >= 3 &&
-    password.length >= 6 &&
+    password.length >= 8 &&
     password === passwordConfirm &&
     emailValid &&
     email.length > 0 &&
@@ -133,11 +133,11 @@ export default function RegisterPage() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="6자 이상"
+            placeholder="8자 이상"
             className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {!passwordLong && (
-            <p className="text-xs text-red-600 mt-1">비밀번호는 6자 이상이어야 합니다</p>
+            <p className="text-xs text-red-600 mt-1">비밀번호는 8자 이상이어야 합니다</p>
           )}
         </div>
 

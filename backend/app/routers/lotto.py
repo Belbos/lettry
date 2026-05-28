@@ -15,6 +15,8 @@ from app.services.lotto_import.dhlottery_sync import sync_new_draws
 
 router = APIRouter(prefix="/api/lotto", tags=["lotto"])
 
+MAX_UPLOAD_BYTES = 5 * 1024 * 1024  # 5 MB
+
 
 def _to_out(d: LottoDraw) -> LottoDrawOut:
     return LottoDrawOut(
@@ -48,7 +50,11 @@ async def import_csv_endpoint(
 ):
     if not (file.filename or "").lower().endswith(".csv"):
         raise HTTPException(400, "must be a .csv file")
-    content = await file.read()
+    # Read at most MAX+1 bytes so an oversized file is rejected without
+    # loading the whole payload into memory.
+    content = await file.read(MAX_UPLOAD_BYTES + 1)
+    if len(content) > MAX_UPLOAD_BYTES:
+        raise HTTPException(413, "file too large (max 5MB)")
     try:
         inserted = import_csv(db, BytesIO(content))
     except ValueError as e:

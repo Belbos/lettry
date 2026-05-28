@@ -18,13 +18,18 @@ class RegisterRequest(BaseModel):
             raise ValueError("아이디는 3~30자여야 합니다")
         if not re.match(r"^[a-zA-Z0-9_]+$", v):
             raise ValueError("아이디는 영문, 숫자, 밑줄(_)만 사용할 수 있습니다")
-        return v
+        # Case-insensitive uniqueness: store/compare in lowercase.
+        return v.lower()
 
     @field_validator("password")
     @classmethod
     def password_valid(cls, v: str) -> str:
-        if len(v) < 6:
-            raise ValueError("비밀번호는 6자 이상이어야 합니다")
+        if len(v) < 8:
+            raise ValueError("비밀번호는 8자 이상이어야 합니다")
+        # bcrypt only uses the first 72 bytes; reject longer to avoid silent
+        # truncation and a 500 from the hashing backend.
+        if len(v.encode("utf-8")) > 72:
+            raise ValueError("비밀번호는 72바이트(영문 기준 72자) 이하여야 합니다")
         return v
 
     @field_validator("email")

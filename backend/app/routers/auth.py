@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.dependencies.auth import get_current_user
 from app.models.user import User
+from app.rate_limit import limiter
 from app.schemas.auth import (
     LoginRequest,
     RegisterRequest,
@@ -17,13 +18,18 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
 @router.get("/check-username/{username}")
-def check_username(username: str, db: Session = Depends(get_db)):
-    exists = db.scalar(select(User).where(User.username == username)) is not None
+@limiter.limit("30/minute")
+def check_username(request: Request, username: str, db: Session = Depends(get_db)):
+    exists = (
+        db.scalar(select(User).where(User.username == username.strip().lower()))
+        is not None
+    )
     return {"available": not exists}
 
 
 @router.post("/register", response_model=UserResponse, status_code=201)
-def register(req: RegisterRequest, db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def register(request: Request, req: RegisterRequest, db: Session = Depends(get_db)):
     if db.scalar(select(User).where(User.username == req.username)):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -46,8 +52,11 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
 
 
 @router.post("/login", response_model=TokenResponse)
-def login(req: LoginRequest, db: Session = Depends(get_db)):
-    user = db.scalar(select(User).where(User.username == req.username))
+@limiter.limit("10/minute")
+def login(request: Request, req: LoginRequest, db: Session = Depends(get_db)):
+    user = db.scalar(
+        select(User).where(User.username == req.username.strip().lower())
+    )
     if user is None or not verify_password(req.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
