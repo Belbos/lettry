@@ -20,7 +20,7 @@ export function FrequencyChart({ items, height = 280 }: Props) {
           />
           <YAxis tick={{ fontSize: 11 }} width={32} />
           <Tooltip
-            formatter={(v: number) => [`${v}회`, "출현"]}
+            formatter={(v) => [`${v}회`, "출현"]}
             labelFormatter={(l) => `번호 ${l}`}
             contentStyle={{ fontSize: 12 }}
           />

@@ -14,7 +14,7 @@ export function SumDistributionChart({ buckets, height = 240 }: Props) {
           <XAxis dataKey="bucket" tick={{ fontSize: 10 }} angle={-30} textAnchor="end" height={48} />
           <YAxis tick={{ fontSize: 11 }} width={32} />
           <Tooltip
-            formatter={(v: number) => [`${v}회`, "출현"]}
+            formatter={(v) => [`${v}회`, "출현"]}
             labelFormatter={(l) => `합계 ${l}`}
             contentStyle={{ fontSize: 12 }}
           />
