@@ -21,3 +21,21 @@ export type StatisticsSummary = {
   sum_distribution: SumDistributionBucket[];
   consecutive_pair_avg: number;
 };
+
+export type OverdueItem = {
+  number: number;
+  last_draw_no: number | null;
+  gap: number;
+};
+export type OverdueResponse = {
+  latest_draw_no: number;
+  total_draws: number;
+  items: OverdueItem[];
+};
+
+export type PairItem = { a: number; b: number; count: number };
+export type PairResponse = {
+  range: StatRange;
+  total_draws: number;
+  items: PairItem[];
+};

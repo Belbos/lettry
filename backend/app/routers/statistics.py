@@ -5,11 +5,15 @@ from app.database import get_db
 from app.schemas.statistics import (
     HotColdResponse,
     NumberFrequencyResponse,
+    OverdueResponse,
+    PairResponse,
     StatisticsSummary,
     StatRange,
 )
 from app.services.statistics import frequency as freq_svc
 from app.services.statistics import hot_cold as hotcold_svc
+from app.services.statistics import overdue as overdue_svc
+from app.services.statistics import pairs as pairs_svc
 from app.services.statistics import summary as summary_svc
 
 router = APIRouter(prefix="/api/statistics", tags=["statistics"])
@@ -44,3 +48,17 @@ def cold(
 @router.get("/summary", response_model=StatisticsSummary)
 def summary(db: Session = Depends(get_db)):
     return summary_svc.summary(db)
+
+
+@router.get("/overdue", response_model=OverdueResponse)
+def overdue(db: Session = Depends(get_db)):
+    return overdue_svc.overdue(db)
+
+
+@router.get("/pairs", response_model=PairResponse)
+def pairs(
+    range: StatRange = Query("all"),
+    limit: int = Query(15, ge=1, le=50),
+    db: Session = Depends(get_db),
+):
+    return pairs_svc.top_pairs(db, range, limit)
