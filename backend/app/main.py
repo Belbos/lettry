@@ -27,8 +27,10 @@ from app.routers import (
 )
 from app.utils.disclaimers import RECOMMENDATION_DISCLAIMER
 
-# MVP bootstrap. For production, switch to Alembic migrations.
-Base.metadata.create_all(bind=engine)
+# Dev convenience: auto-create tables. In production (APP_ENV=production),
+# the schema is managed by Alembic (`alembic upgrade head`) instead.
+if settings.app_env != "production":
+    Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Lottery MVP API", version="0.1.0")
 app.state.limiter = limiter

@@ -29,12 +29,16 @@ cd backend
 python -m venv .venv
 .venv\Scripts\activate  # Windows
 pip install -e .
-python -c "from app.database import Base, engine; from app.models import *; Base.metadata.create_all(bind=engine)"
+# 스키마 적용 (Alembic). 개발 모드에서는 앱 시작 시 자동 생성도 됩니다.
+alembic upgrade head
 # 초기 데이터 적재 (1,224회분)
 python -c "from app.database import SessionLocal; from app.services.lotto_import.csv_importer import import_csv; db=SessionLocal(); print('inserted:', import_csv(db, 'asset/lotto.csv'))"
 # 서버 기동
 uvicorn app.main:app --reload --port 8000
 ```
+
+> 배포(PostgreSQL + Docker)는 [`DEPLOY.md`](DEPLOY.md)를 참고하세요. 운영에서는
+> `create_all` 대신 Alembic 마이그레이션으로 스키마를 관리합니다.
 
 ### Frontend
 
