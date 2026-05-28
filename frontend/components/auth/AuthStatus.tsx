@@ -4,9 +4,13 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
+import { usePresetStore } from "@/lib/store/presetStore";
+import { useHistoryStore } from "@/lib/store/historyStore";
 
 export function AuthStatus() {
   const { user, logout } = useAuthStore();
+  const resetPresets = usePresetStore((s) => s.reset);
+  const resetHistory = useHistoryStore((s) => s.reset);
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
@@ -41,6 +45,8 @@ export function AuthStatus() {
       <button
         onClick={() => {
           logout();
+          resetPresets();
+          resetHistory();
           router.push("/");
         }}
         className="text-sm text-slate-500 hover:text-slate-700"

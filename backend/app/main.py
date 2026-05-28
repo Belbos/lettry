@@ -12,7 +12,7 @@ from app.models import (  # noqa: F401
     User,
     UserAlgorithmPreset,
 )
-from app.routers import auth, lotto, recommend, statistics
+from app.routers import auth, history, lotto, presets, recommend, statistics
 from app.utils.disclaimers import RECOMMENDATION_DISCLAIMER
 
 # MVP bootstrap. For production, switch to Alembic migrations.
@@ -31,6 +31,8 @@ app.include_router(auth.router)
 app.include_router(lotto.router)
 app.include_router(statistics.router)
 app.include_router(recommend.router)
+app.include_router(presets.router)
+app.include_router(history.router)
 
 
 @app.get("/health")

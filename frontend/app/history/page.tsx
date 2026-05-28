@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LottoNumberSet } from "@/components/lotto/LottoNumberSet";
 import { useHistoryStore } from "@/lib/store/historyStore";
+import { useAuthStore } from "@/lib/store/authStore";
+import { LoginRequired } from "@/components/auth/LoginRequired";
 
 const STEP_LABEL: Record<string, string> = {
   hot: "Hot",
@@ -26,9 +28,35 @@ function formatRelative(iso: string): string {
 }
 
 export default function HistoryPage() {
+  const user = useAuthStore((s) => s.user);
   const entries = useHistoryStore((s) => s.entries);
+  const loaded = useHistoryStore((s) => s.loaded);
+  const load = useHistoryStore((s) => s.load);
   const clear = useHistoryStore((s) => s.clear);
+  const reset = useHistoryStore((s) => s.reset);
   const [confirmClear, setConfirmClear] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      load().catch(() => {});
+    } else {
+      reset();
+    }
+  }, [user, load, reset]);
+
+  if (!user) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-xl font-bold">추천 이력</h1>
+          <p className="text-sm text-slate-600 mt-1">
+            로그인하면 추천 결과가 계정에 자동으로 기록됩니다.
+          </p>
+        </div>
+        <LoginRequired message="추천 이력은 로그인 후 이용할 수 있습니다." />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -36,14 +64,14 @@ export default function HistoryPage() {
         <div>
           <h1 className="text-xl font-bold">추천 이력</h1>
           <p className="text-sm text-slate-600 mt-1">
-            최근 추천 결과 최대 100건 (로컬 저장).
+            최근 추천 결과 최대 100건 (계정에 저장).
           </p>
         </div>
         {entries.length > 0 && (
           <button
             onClick={() => {
               if (confirmClear) {
-                clear();
+                clear().catch(() => {});
                 setConfirmClear(false);
               } else {
                 setConfirmClear(true);
@@ -57,7 +85,11 @@ export default function HistoryPage() {
         )}
       </div>
 
-      {entries.length === 0 ? (
+      {!loaded ? (
+        <div className="text-sm text-slate-500 bg-white border rounded-2xl p-8 text-center">
+          불러오는 중…
+        </div>
+      ) : entries.length === 0 ? (
         <div className="text-sm text-slate-500 bg-white border rounded-2xl p-8 text-center">
           아직 추천 이력이 없습니다. 메인 화면에서 번호 추천을 받아보세요.
         </div>
