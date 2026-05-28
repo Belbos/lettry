@@ -37,7 +37,7 @@ export function RatioCard({
               ))}
             </Pie>
             <Tooltip
-              formatter={(v: number) => [v.toFixed(2), "평균 개수"]}
+              formatter={(v) => [Number(v).toFixed(2), "평균 개수"]}
               contentStyle={{ fontSize: 12 }}
             />
             <Legend wrapperStyle={{ fontSize: 12 }} />

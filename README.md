@@ -29,12 +29,16 @@ cd backend
 python -m venv .venv
 .venv\Scripts\activate  # Windows
 pip install -e .
-python -c "from app.database import Base, engine; from app.models import *; Base.metadata.create_all(bind=engine)"
+# 스키마 적용 (Alembic). 개발 모드에서는 앱 시작 시 자동 생성도 됩니다.
+alembic upgrade head
 # 초기 데이터 적재 (1,224회분)
 python -c "from app.database import SessionLocal; from app.services.lotto_import.csv_importer import import_csv; db=SessionLocal(); print('inserted:', import_csv(db, 'asset/lotto.csv'))"
 # 서버 기동
 uvicorn app.main:app --reload --port 8000
 ```
+
+> 배포(PostgreSQL + Docker)는 [`DEPLOY.md`](DEPLOY.md)를 참고하세요. 운영에서는
+> `create_all` 대신 Alembic 마이그레이션으로 스키마를 관리합니다.
 
 ### Frontend
 
@@ -67,13 +71,38 @@ stop.bat
 
 ## 주요 API
 
-| Method | Path | Description |
-|---|---|---|
-| POST | `/api/lotto/import-csv` | CSV 업로드 |
-| POST | `/api/lotto/sync` | 동행복권에서 신규 회차 증분 동기화 |
-| GET | `/api/lotto/draws` | 회차 목록 |
-| GET | `/api/statistics/{number-frequency,hot,cold,summary}` | 통계 |
-| POST | `/api/recommend` | 사용자 설정 기반 6개 번호 추천 |
+| Method | Path | Description | 인증 |
+|---|---|---|---|
+| POST | `/api/auth/register` | 회원가입 | - |
+| POST | `/api/auth/login` | 로그인 (JWT 발급) | - |
+| POST | `/api/lotto/import-csv` | CSV 대량 업로드 | 관리자 |
+| POST | `/api/lotto/sync` | 동행복권에서 신규 회차 증분 동기화 | 관리자 |
+| GET | `/api/lotto/draws` | 회차 목록 (페이징: limit/offset, 최신순, total 포함) | - |
+| GET | `/api/statistics/{number-frequency,hot,cold,summary,overdue,pairs}` | 통계 (미출현 기간·동시출현 포함) | - |
+| POST | `/api/recommend` | 사용자 설정 기반 6개 번호 추천 | - |
+| POST | `/api/check` | 번호 6개를 과거 전체 회차와 대조 (역대 최고 등수·등수별 횟수) | - |
+| GET/POST/PUT/DELETE | `/api/presets` | 프리셋 관리 (계정별) | 필요 |
+| GET/POST/DELETE | `/api/history` | 추천 이력 (계정별) | 필요 |
+| POST | `/api/admin/draws` | 특정 회차 당첨번호 입력/정정 | 관리자 |
+| GET | `/api/admin/users` | 사용자 목록 | 관리자 |
+| PATCH | `/api/admin/users/{id}` | 사용자 관리자 권한 부여/해제 | 관리자 |
+
+### 관리자 부트스트랩
+
+최초 관리자는 두 가지 방법으로 만들 수 있습니다.
+
+```bash
+# 방법 1) 환경변수: 아래 username으로 가입한 사용자를 자동 승격
+#         (단, 관리자가 아직 한 명도 없을 때만 적용되어 부트스트랩 후 백도어가 되지 않음)
+INITIAL_ADMIN_USERNAME=myadmin
+
+# 방법 2) CLI: 이미 가입한 사용자를 관리자로 승격 (DB 접근 권한 필요)
+cd backend
+python -m scripts.create_admin myadmin            # 부여
+python -m scripts.create_admin myadmin --revoke   # 해제
+```
+
+이후 추가 관리자는 관리자 대시보드(`/admin`)의 사용자 목록에서 지정/해제할 수 있습니다.
 
 ## 폴더 구조
 

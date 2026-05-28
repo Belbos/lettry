@@ -15,8 +15,10 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app.database import Base, get_db
+from app.dependencies.auth import get_current_user
 from app.main import app
 from app.models import LottoDraw  # noqa: F401
+from app.models.user import User
 from app.services.lotto_import.dhlottery_client import DhDraw
 
 
@@ -41,6 +43,10 @@ def client():
             db.close()
 
     app.dependency_overrides[get_db] = _get_db
+    app.dependency_overrides[get_current_user] = lambda: User(
+        id=1, username="tester", email="tester@e.com", hashed_password="x",
+        is_admin=True,
+    )
     yield TestClient(app)
     app.dependency_overrides.clear()
 

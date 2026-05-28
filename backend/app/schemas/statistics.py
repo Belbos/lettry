@@ -41,3 +41,27 @@ class StatisticsSummary(BaseModel):
     sum_avg: float
     sum_distribution: list[SumDistributionBucket]
     consecutive_pair_avg: float
+
+
+class OverdueItem(BaseModel):
+    number: int
+    last_draw_no: int | None
+    gap: int   # draws elapsed since last appearance (0 = in the latest draw)
+
+
+class OverdueResponse(BaseModel):
+    latest_draw_no: int
+    total_draws: int
+    items: list[OverdueItem]
+
+
+class PairItem(BaseModel):
+    a: int
+    b: int
+    count: int
+
+
+class PairResponse(BaseModel):
+    range: StatRange
+    total_draws: int
+    items: list[PairItem]

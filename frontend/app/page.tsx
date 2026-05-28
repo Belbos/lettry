@@ -3,10 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import { LottoNumberSet } from "@/components/lotto/LottoNumberSet";
+import { WinCheck } from "@/components/lotto/WinCheck";
 import { postRecommend } from "@/lib/api/recommend";
 import { ApiError } from "@/lib/api/client";
 import { useSettingsStore } from "@/lib/store/settingsStore";
 import { useHistoryStore } from "@/lib/store/historyStore";
+import { useAuthStore } from "@/lib/store/authStore";
 import type { RecommendResponse } from "@/lib/types/recommendation";
 
 const STEP_LABEL: Record<string, string> = {
@@ -21,14 +23,18 @@ export default function HomePage() {
   const buildSteps = useSettingsStore((s) => s.buildSteps);
   const filters = useSettingsStore((s) => s.filters);
   const pushHistory = useHistoryStore((s) => s.push);
+  const user = useAuthStore((s) => s.user);
 
   const [result, setResult] = useState<RecommendResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Bumped on each recommend so WinCheck remounts and resets to its button.
+  const [runId, setRunId] = useState(0);
 
   async function handleRecommend() {
     setLoading(true);
     setError(null);
+    setRunId((n) => n + 1);
     try {
       const steps = buildSteps();
       if (steps.length === 0) {
@@ -37,12 +43,14 @@ export default function HomePage() {
       }
       const res = await postRecommend({ steps, filters });
       setResult(res);
-      pushHistory({
-        numbers: res.numbers,
-        summary: res.summary,
-        appliedSteps: res.appliedSteps,
-        presetName: null,
-      });
+      if (user) {
+        pushHistory({
+          numbers: res.numbers,
+          summary: res.summary,
+          appliedSteps: res.appliedSteps,
+          presetName: null,
+        }).catch(() => {});
+      }
     } catch (e) {
       if (e instanceof ApiError) {
         const body = e.body as { detail?: { message?: string } | string } | undefined;
@@ -118,6 +126,12 @@ export default function HomePage() {
             {loading ? "추천 중..." : "번호 추천 받기"}
           </button>
         </div>
+
+        {result && (
+          <div className="flex justify-center">
+            <WinCheck key={runId} numbers={result.numbers} />
+          </div>
+        )}
       </section>
 
       {result && (

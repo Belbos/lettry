@@ -2,10 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { ApiError } from "@/lib/api/client";
-import { getCold, getFrequency, getHot, getSummary } from "@/lib/api/statistics";
+import {
+  getCold,
+  getFrequency,
+  getHot,
+  getOverdue,
+  getPairs,
+  getSummary,
+} from "@/lib/api/statistics";
 import type {
   HotColdResponse,
   NumberFrequencyResponse,
+  OverdueResponse,
+  PairResponse,
   StatRange,
   StatisticsSummary,
 } from "@/lib/types/statistics";
@@ -13,6 +22,8 @@ import { FrequencyChart } from "@/components/statistics/FrequencyChart";
 import { HotColdPanel } from "@/components/statistics/HotColdPanel";
 import { RatioCard } from "@/components/statistics/RatioCard";
 import { SumDistributionChart } from "@/components/statistics/SumDistributionChart";
+import { OverduePanel } from "@/components/statistics/OverduePanel";
+import { CoOccurrencePanel } from "@/components/statistics/CoOccurrencePanel";
 import { SyncButton } from "@/components/statistics/SyncButton";
 
 const RANGE_OPTIONS: { value: StatRange; label: string }[] = [
@@ -29,6 +40,8 @@ export default function StatisticsPage() {
   const [hot, setHot] = useState<HotColdResponse | null>(null);
   const [cold, setCold] = useState<HotColdResponse | null>(null);
   const [summary, setSummary] = useState<StatisticsSummary | null>(null);
+  const [overdue, setOverdue] = useState<OverdueResponse | null>(null);
+  const [pairs, setPairs] = useState<PairResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -38,17 +51,21 @@ export default function StatisticsPage() {
     setError(null);
     (async () => {
       try {
-        const [f, h, c, s] = await Promise.all([
+        const [f, h, c, s, o, p] = await Promise.all([
           getFrequency(range),
           getHot(range === "all" ? "last_20" : range, 6),
           getCold(range === "all" ? "last_20" : range, 6),
           getSummary(),
+          getOverdue(),
+          getPairs(range, 15),
         ]);
         if (cancelled) return;
         setFrequency(f);
         setHot(h);
         setCold(c);
         setSummary(s);
+        setOverdue(o);
+        setPairs(p);
       } catch (e) {
         if (cancelled) return;
         const msg = e instanceof ApiError ? e.message : e instanceof Error ? e.message : String(e);
@@ -68,7 +85,7 @@ export default function StatisticsPage() {
         <div>
           <h1 className="text-xl font-bold">통계 대시보드</h1>
           <p className="text-sm text-slate-600 mt-1">
-            번호별 출현 빈도, Hot/Cold, 합계 분포, 홀짝·고저 비율을 확인합니다.
+            번호별 출현 빈도, Hot/Cold, 미출현 기간, 동시출현 번호쌍, 합계 분포, 홀짝·고저 비율을 확인합니다.
           </p>
         </div>
         <div className="flex flex-col items-end gap-2">
@@ -138,6 +155,22 @@ export default function StatisticsPage() {
         {cold && (
           <section className="bg-white border rounded-2xl p-5">
             <HotColdPanel title={`Cold Top 6 (${labelOf(cold.range)})`} items={cold.items} />
+          </section>
+        )}
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-4">
+        {overdue && (
+          <section className="bg-white border rounded-2xl p-5">
+            <OverduePanel items={overdue.items} />
+            <p className="text-[11px] text-slate-400 mt-3">
+              최신 {overdue.latest_draw_no}회 기준, 전체 {overdue.total_draws}회 분석
+            </p>
+          </section>
+        )}
+        {pairs && (
+          <section className="bg-white border rounded-2xl p-5">
+            <CoOccurrencePanel items={pairs.items} rangeLabel={labelOf(pairs.range)} />
           </section>
         )}
       </div>
