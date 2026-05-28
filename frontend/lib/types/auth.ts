@@ -1,0 +1,23 @@
+export type RegisterRequest = {
+  username: string;
+  password: string;
+  password_confirm: string;
+  email: string;
+};
+
+export type LoginRequest = {
+  username: string;
+  password: string;
+};
+
+export type TokenResponse = {
+  access_token: string;
+  token_type: string;
+};
+
+export type UserInfo = {
+  id: number;
+  username: string;
+  email: string;
+  created_at: string;
+};

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import "./globals.css";
 import { Disclaimer } from "@/components/common/Disclaimer";
+import { AuthStatus } from "@/components/auth/AuthStatus";
 
 export const metadata: Metadata = {
   title: "로또 번호 추천 (엔터테인먼트)",
@@ -24,13 +25,16 @@ export default function RootLayout({
                 엔터테인먼트용
               </span>
             </Link>
-            <nav className="flex gap-4 text-sm text-slate-600">
-              <Link href="/" className="hover:text-slate-900">추천</Link>
-              <Link href="/settings" className="hover:text-slate-900">설정</Link>
-              <Link href="/statistics" className="hover:text-slate-900">통계</Link>
-              <Link href="/presets" className="hover:text-slate-900">프리셋</Link>
-              <Link href="/history" className="hover:text-slate-900">이력</Link>
-            </nav>
+            <div className="flex items-center gap-6">
+              <nav className="flex gap-4 text-sm text-slate-600">
+                <Link href="/" className="hover:text-slate-900">추천</Link>
+                <Link href="/settings" className="hover:text-slate-900">설정</Link>
+                <Link href="/statistics" className="hover:text-slate-900">통계</Link>
+                <Link href="/presets" className="hover:text-slate-900">프리셋</Link>
+                <Link href="/history" className="hover:text-slate-900">이력</Link>
+              </nav>
+              <AuthStatus />
+            </div>
           </div>
         </header>
 

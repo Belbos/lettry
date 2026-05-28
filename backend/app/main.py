@@ -12,7 +12,7 @@ from app.models import (  # noqa: F401
     User,
     UserAlgorithmPreset,
 )
-from app.routers import lotto, recommend, statistics
+from app.routers import auth, lotto, recommend, statistics
 from app.utils.disclaimers import RECOMMENDATION_DISCLAIMER
 
 # MVP bootstrap. For production, switch to Alembic migrations.
@@ -27,6 +27,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth.router)
 app.include_router(lotto.router)
 app.include_router(statistics.router)
 app.include_router(recommend.router)
