@@ -73,7 +73,7 @@ stop.bat
 | POST | `/api/auth/login` | 로그인 (JWT 발급) | - |
 | POST | `/api/lotto/import-csv` | CSV 대량 업로드 | 관리자 |
 | POST | `/api/lotto/sync` | 동행복권에서 신규 회차 증분 동기화 | 관리자 |
-| GET | `/api/lotto/draws` | 회차 목록 | - |
+| GET | `/api/lotto/draws` | 회차 목록 (페이징: limit/offset, 최신순, total 포함) | - |
 | GET | `/api/statistics/{number-frequency,hot,cold,summary,overdue,pairs}` | 통계 (미출현 기간·동시출현 포함) | - |
 | POST | `/api/recommend` | 사용자 설정 기반 6개 번호 추천 | - |
 | POST | `/api/check` | 번호 6개를 과거 전체 회차와 대조 (역대 최고 등수·등수별 횟수) | - |

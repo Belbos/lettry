@@ -30,6 +30,7 @@ export default function RootLayout({
                 <Link href="/" className="hover:text-slate-900">추천</Link>
                 <Link href="/settings" className="hover:text-slate-900">설정</Link>
                 <Link href="/statistics" className="hover:text-slate-900">통계</Link>
+                <Link href="/draws" className="hover:text-slate-900">당첨번호</Link>
                 <Link href="/presets" className="hover:text-slate-900">프리셋</Link>
                 <Link href="/history" className="hover:text-slate-900">이력</Link>
               </nav>

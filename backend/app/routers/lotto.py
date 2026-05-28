@@ -8,7 +8,7 @@ from app.dependencies.auth import get_current_admin
 from app.models.lotto_draw import LottoDraw
 from app.models.user import User
 from app.repositories import lotto_repo
-from app.schemas.lotto import LottoDrawOut
+from app.schemas.lotto import DrawListResponse, LottoDrawOut
 from app.services.lotto_import.csv_importer import import_csv
 from app.services.lotto_import.dhlottery_client import DhLotteryError
 from app.services.lotto_import.dhlottery_sync import sync_new_draws
@@ -27,11 +27,16 @@ def _to_out(d: LottoDraw) -> LottoDrawOut:
     )
 
 
-@router.get("/draws", response_model=list[LottoDrawOut])
+@router.get("/draws", response_model=DrawListResponse)
 def list_draws(limit: int = 50, offset: int = 0, db: Session = Depends(get_db)):
     if limit < 1 or limit > 500:
         raise HTTPException(400, "limit must be between 1 and 500")
-    return [_to_out(d) for d in lotto_repo.list_draws(db, limit, offset)]
+    if offset < 0:
+        raise HTTPException(400, "offset must be >= 0")
+    items = [_to_out(d) for d in lotto_repo.list_draws(db, limit, offset)]
+    return DrawListResponse(
+        items=items, total=lotto_repo.count(db), limit=limit, offset=offset
+    )
 
 
 @router.get("/draws/{draw_no}", response_model=LottoDrawOut)

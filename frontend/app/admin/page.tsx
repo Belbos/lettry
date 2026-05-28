@@ -4,12 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import { ApiError } from "@/lib/api/client";
-import {
-  importCsv,
-  listUsers,
-  setAdminFlag,
-  upsertDraw,
-} from "@/lib/api/admin";
+import { importCsv, listUsers, setAdminFlag } from "@/lib/api/admin";
+import { AdminDrawsSection } from "@/components/admin/AdminDrawsSection";
 import type { AdminUser } from "@/lib/types/admin";
 
 function errMessage(e: unknown): string {
@@ -44,7 +40,7 @@ export default function AdminPage() {
         </p>
       </div>
       <CsvUploadSection />
-      <SingleDrawSection />
+      <AdminDrawsSection />
       <UsersSection currentUserId={user.id} />
     </div>
   );
@@ -93,112 +89,6 @@ function CsvUploadSection() {
           {busy ? "업로드 중…" : "업로드"}
         </button>
       </div>
-      {msg && <p className="text-xs text-green-600">{msg}</p>}
-      {err && <p className="text-xs text-red-600">{err}</p>}
-    </section>
-  );
-}
-
-function SingleDrawSection() {
-  const [drawNo, setDrawNo] = useState("");
-  const [drawDate, setDrawDate] = useState("");
-  const [numbers, setNumbers] = useState<string[]>(["", "", "", "", "", ""]);
-  const [bonus, setBonus] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
-  const [err, setErr] = useState<string | null>(null);
-
-  function setNum(i: number, v: string) {
-    setNumbers((arr) => arr.map((x, idx) => (idx === i ? v : x)));
-  }
-
-  const canSubmit =
-    drawNo &&
-    drawDate &&
-    numbers.every((n) => n !== "") &&
-    bonus &&
-    !busy;
-
-  async function handleSubmit() {
-    setBusy(true);
-    setMsg(null);
-    setErr(null);
-    try {
-      const res = await upsertDraw({
-        draw_no: Number(drawNo),
-        draw_date: drawDate,
-        numbers: numbers.map(Number),
-        bonus_number: Number(bonus),
-      });
-      setMsg(
-        `${res.draw_no}회차 저장됨: [${res.numbers.join(", ")}] + ${res.bonus_number}`,
-      );
-    } catch (e) {
-      setErr(errMessage(e));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <section className="bg-white border rounded-2xl p-5 space-y-3">
-      <h2 className="font-semibold text-sm">특정 회차 당첨번호 입력</h2>
-      <p className="text-xs text-slate-500">
-        새 회차를 추가하거나 기존 회차를 정정합니다. 번호는 자동으로 정렬됩니다.
-      </p>
-      <div className="flex flex-wrap gap-3">
-        <label className="text-xs text-slate-600">
-          회차
-          <input
-            type="number"
-            value={drawNo}
-            onChange={(e) => setDrawNo(e.target.value)}
-            className="block w-24 mt-1 border rounded px-2 py-1 text-sm"
-          />
-        </label>
-        <label className="text-xs text-slate-600">
-          추첨일
-          <input
-            type="date"
-            value={drawDate}
-            onChange={(e) => setDrawDate(e.target.value)}
-            className="block mt-1 border rounded px-2 py-1 text-sm"
-          />
-        </label>
-      </div>
-      <div className="flex flex-wrap gap-2 items-end">
-        {numbers.map((n, i) => (
-          <label key={i} className="text-xs text-slate-600">
-            번호 {i + 1}
-            <input
-              type="number"
-              min={1}
-              max={45}
-              value={n}
-              onChange={(e) => setNum(i, e.target.value)}
-              className="block w-16 mt-1 border rounded px-2 py-1 text-sm"
-            />
-          </label>
-        ))}
-        <label className="text-xs text-amber-700">
-          보너스
-          <input
-            type="number"
-            min={1}
-            max={45}
-            value={bonus}
-            onChange={(e) => setBonus(e.target.value)}
-            className="block w-16 mt-1 border border-amber-300 rounded px-2 py-1 text-sm"
-          />
-        </label>
-      </div>
-      <button
-        onClick={handleSubmit}
-        disabled={!canSubmit}
-        className="px-4 py-2 rounded-md bg-slate-900 text-white text-sm hover:bg-slate-800 disabled:opacity-50"
-      >
-        {busy ? "저장 중…" : "저장"}
-      </button>
       {msg && <p className="text-xs text-green-600">{msg}</p>}
       {err && <p className="text-xs text-red-600">{err}</p>}
     </section>

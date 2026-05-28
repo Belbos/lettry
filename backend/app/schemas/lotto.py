@@ -11,3 +11,10 @@ class LottoDrawOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class DrawListResponse(BaseModel):
+    items: list[LottoDrawOut]
+    total: int
+    limit: int
+    offset: int
