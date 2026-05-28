@@ -76,6 +76,7 @@ stop.bat
 | GET | `/api/lotto/draws` | 회차 목록 | - |
 | GET | `/api/statistics/{number-frequency,hot,cold,summary}` | 통계 | - |
 | POST | `/api/recommend` | 사용자 설정 기반 6개 번호 추천 | - |
+| POST | `/api/check` | 번호 6개를 과거 전체 회차와 대조 (역대 최고 등수·등수별 횟수) | - |
 | GET/POST/PUT/DELETE | `/api/presets` | 프리셋 관리 (계정별) | 필요 |
 | GET/POST/DELETE | `/api/history` | 추천 이력 (계정별) | 필요 |
 | POST | `/api/admin/draws` | 특정 회차 당첨번호 입력/정정 | 관리자 |

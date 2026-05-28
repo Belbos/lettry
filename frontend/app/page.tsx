@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { LottoNumberSet } from "@/components/lotto/LottoNumberSet";
+import { WinCheck } from "@/components/lotto/WinCheck";
 import { postRecommend } from "@/lib/api/recommend";
 import { ApiError } from "@/lib/api/client";
 import { useSettingsStore } from "@/lib/store/settingsStore";
@@ -104,6 +105,12 @@ export default function HomePage() {
               저 {result.summary.lowCount} / 고 {result.summary.highCount} ·
               합 {result.summary.sum} · 연속 {result.summary.consecutivePairs}쌍
             </div>
+          </div>
+        )}
+
+        {result && (
+          <div className="flex justify-center">
+            <WinCheck numbers={result.numbers} />
           </div>
         )}
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { LottoNumberSet } from "@/components/lotto/LottoNumberSet";
+import { WinCheck } from "@/components/lotto/WinCheck";
 import { useHistoryStore } from "@/lib/store/historyStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import { LoginRequired } from "@/components/auth/LoginRequired";
@@ -113,6 +114,9 @@ export default function HistoryPage() {
               </div>
               <div className="text-xs text-slate-400 text-center">
                 {e.appliedSteps.map((s) => STEP_LABEL[s] ?? s).join(" → ")}
+              </div>
+              <div className="flex justify-center">
+                <WinCheck numbers={e.numbers} />
               </div>
             </li>
           ))}

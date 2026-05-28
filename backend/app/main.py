@@ -15,7 +15,16 @@ from app.models import (  # noqa: F401
     UserAlgorithmPreset,
 )
 from app.rate_limit import limiter
-from app.routers import admin, auth, history, lotto, presets, recommend, statistics
+from app.routers import (
+    admin,
+    auth,
+    check,
+    history,
+    lotto,
+    presets,
+    recommend,
+    statistics,
+)
 from app.utils.disclaimers import RECOMMENDATION_DISCLAIMER
 
 # MVP bootstrap. For production, switch to Alembic migrations.
@@ -53,6 +62,7 @@ app.include_router(recommend.router)
 app.include_router(presets.router)
 app.include_router(history.router)
 app.include_router(admin.router)
+app.include_router(check.router)
 
 
 @app.get("/health")
