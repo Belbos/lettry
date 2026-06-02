@@ -75,6 +75,8 @@ stop.bat
 |---|---|---|---|
 | POST | `/api/auth/register` | 회원가입 | - |
 | POST | `/api/auth/login` | 로그인 (JWT 발급) | - |
+| POST | `/api/auth/forgot-password` | 임시 비밀번호를 이메일로 발송 | - |
+| POST | `/api/auth/reset-password` | 임시 비밀번호로 새 비밀번호 설정 | 필요 |
 | POST | `/api/lotto/import-csv` | CSV 대량 업로드 | 관리자 |
 | POST | `/api/lotto/sync` | 동행복권에서 신규 회차 증분 동기화 | 관리자 |
 | GET | `/api/lotto/draws` | 회차 목록 (페이징: limit/offset, 최신순, total 포함) | - |

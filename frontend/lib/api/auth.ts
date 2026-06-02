@@ -1,7 +1,9 @@
 import { apiFetch } from "./client";
 import type {
+  ForgotPasswordRequest,
   LoginRequest,
   RegisterRequest,
+  ResetPasswordRequest,
   TokenResponse,
   UserInfo,
 } from "@/lib/types/auth";
@@ -32,4 +34,24 @@ export async function checkUsername(
   return apiFetch<{ available: boolean }>(
     `/api/auth/check-username/${encodeURIComponent(username)}`,
   );
+}
+
+export async function forgotPassword(
+  req: ForgotPasswordRequest,
+): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>("/api/auth/forgot-password", {
+    method: "POST",
+    body: JSON.stringify(req),
+  });
+}
+
+export async function resetPassword(
+  req: ResetPasswordRequest,
+  token: string,
+): Promise<UserInfo> {
+  return apiFetch<UserInfo>("/api/auth/reset-password", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(req),
+  });
 }
