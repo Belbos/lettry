@@ -17,7 +17,23 @@ class Settings(BaseSettings):
     # exists yet (closes the bootstrap window — see routers/auth.py).
     initial_admin_username: str = ""
 
+    # SMTP for transactional email (password reset). The app password MUST be
+    # provided via env (SMTP_PASSWORD) — never hardcode it.
+    smtp_host: str = "smtp.gmail.com"
+    smtp_port: int = 587
+    smtp_user: str = "youngjong674@gmail.com"
+    smtp_password: str = ""
+    smtp_from: str = ""  # defaults to smtp_user when empty
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+
+    @property
+    def email_from(self) -> str:
+        return self.smtp_from or self.smtp_user
+
+    @property
+    def smtp_enabled(self) -> bool:
+        return bool(self.smtp_host and self.smtp_user and self.smtp_password)
 
     @model_validator(mode="after")
     def _validate_jwt_secret(self):

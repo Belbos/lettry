@@ -30,7 +30,7 @@ export function AuthStatus() {
           로그인
         </Link>
         <Link
-          href="/register"
+          href="/register/terms"
           className="text-sm bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 transition-colors"
         >
           회원가입

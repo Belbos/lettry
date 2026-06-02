@@ -3,11 +3,22 @@ export type RegisterRequest = {
   password: string;
   password_confirm: string;
   email: string;
+  terms_agreed: boolean;
 };
 
 export type LoginRequest = {
   username: string;
   password: string;
+};
+
+export type ForgotPasswordRequest = {
+  username: string;
+};
+
+export type ResetPasswordRequest = {
+  temp_password: string;
+  new_password: string;
+  new_password_confirm: string;
 };
 
 export type TokenResponse = {
@@ -20,5 +31,6 @@ export type UserInfo = {
   username: string;
   email: string;
   is_admin: boolean;
+  must_reset_password: boolean;
   created_at: string;
 };

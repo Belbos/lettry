@@ -12,7 +12,7 @@ export function LoginRequired({ message }: { message: string }) {
           로그인
         </Link>
         <Link
-          href="/register"
+          href="/register/terms"
           className="px-4 py-2 rounded-md border text-sm hover:bg-slate-50"
         >
           회원가입

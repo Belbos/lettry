@@ -1,9 +1,18 @@
+import secrets
+import string
 from datetime import datetime, timedelta, timezone
 
 import bcrypt
 import jwt
 
 from app.config import settings
+
+# Exclude visually ambiguous characters (0/O, 1/l/I) for an emailed password.
+_TEMP_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789"
+
+
+def generate_temp_password(length: int = 12) -> str:
+    return "".join(secrets.choice(_TEMP_ALPHABET) for _ in range(length))
 
 
 def hash_password(password: str) -> str:

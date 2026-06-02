@@ -4,11 +4,22 @@ from datetime import datetime
 from pydantic import BaseModel, field_validator, model_validator
 
 
+def _validate_password(v: str) -> str:
+    if len(v) < 8:
+        raise ValueError("비밀번호는 8자 이상이어야 합니다")
+    # bcrypt only uses the first 72 bytes; reject longer to avoid silent
+    # truncation and a 500 from the hashing backend.
+    if len(v.encode("utf-8")) > 72:
+        raise ValueError("비밀번호는 72바이트(영문 기준 72자) 이하여야 합니다")
+    return v
+
+
 class RegisterRequest(BaseModel):
     username: str
     password: str
     password_confirm: str
     email: str
+    terms_agreed: bool = False
 
     @field_validator("username")
     @classmethod
@@ -24,13 +35,7 @@ class RegisterRequest(BaseModel):
     @field_validator("password")
     @classmethod
     def password_valid(cls, v: str) -> str:
-        if len(v) < 8:
-            raise ValueError("비밀번호는 8자 이상이어야 합니다")
-        # bcrypt only uses the first 72 bytes; reject longer to avoid silent
-        # truncation and a 500 from the hashing backend.
-        if len(v.encode("utf-8")) > 72:
-            raise ValueError("비밀번호는 72바이트(영문 기준 72자) 이하여야 합니다")
-        return v
+        return _validate_password(v)
 
     @field_validator("email")
     @classmethod
@@ -44,12 +49,37 @@ class RegisterRequest(BaseModel):
     def passwords_match(self):
         if self.password != self.password_confirm:
             raise ValueError("비밀번호가 일치하지 않습니다")
+        # In model_validator so a missing field (default False) is rejected too;
+        # field_validator does not run for unset defaults in Pydantic v2.
+        if not self.terms_agreed:
+            raise ValueError("이용약관 및 개인정보 처리방침에 동의해야 합니다")
         return self
 
 
 class LoginRequest(BaseModel):
     username: str
     password: str
+
+
+class ForgotPasswordRequest(BaseModel):
+    username: str
+
+
+class ResetPasswordRequest(BaseModel):
+    temp_password: str
+    new_password: str
+    new_password_confirm: str
+
+    @field_validator("new_password")
+    @classmethod
+    def new_password_valid(cls, v: str) -> str:
+        return _validate_password(v)
+
+    @model_validator(mode="after")
+    def passwords_match(self):
+        if self.new_password != self.new_password_confirm:
+            raise ValueError("비밀번호가 일치하지 않습니다")
+        return self
 
 
 class TokenResponse(BaseModel):
@@ -62,6 +92,7 @@ class UserResponse(BaseModel):
     username: str
     email: str
     is_admin: bool
+    must_reset_password: bool
     created_at: datetime
 
     model_config = {"from_attributes": True}

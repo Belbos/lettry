@@ -3,10 +3,11 @@ import Link from "next/link";
 import "./globals.css";
 import { Disclaimer } from "@/components/common/Disclaimer";
 import { AuthStatus } from "@/components/auth/AuthStatus";
+import { SITE_BRAND, SITE_BRAND_SUBLABEL, SITE_DESCRIPTION, SITE_TITLE } from "@/lib/copy";
 
 export const metadata: Metadata = {
-  title: "로또 번호 추천 (엔터테인먼트)",
-  description: "통계 기반 로또 번호 조합 추천 서비스 (당첨 보장 아님)",
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
 };
 
 export default function RootLayout({
@@ -20,9 +21,9 @@ export default function RootLayout({
         <header className="border-b bg-white">
           <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
             <Link href="/" className="font-bold text-lg text-slate-900">
-              🎲 Lotto Advisor
+              🎲 {SITE_BRAND}
               <span className="ml-2 text-xs text-slate-500 font-normal">
-                엔터테인먼트용
+                {SITE_BRAND_SUBLABEL}
               </span>
             </Link>
             <div className="flex items-center gap-6">

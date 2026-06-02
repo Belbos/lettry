@@ -52,6 +52,18 @@ docker compose exec backend python -m scripts.create_admin <username>
 `backend(8000)`, `frontend(3000)`을 리버스 프록시 뒤에 두고 TLS를 종단하세요.
 `APP_ENV=production`이면 백엔드가 HSTS 헤더를 보냅니다(실제 HTTPS에서만 의미 있음).
 
+## 7. 비밀번호 재설정 이메일 (Gmail SMTP)
+
+비밀번호 찾기 기능은 Gmail SMTP로 임시 비밀번호를 발송합니다.
+
+1. 발신 Gmail 계정(`SMTP_USER`)에서 **2단계 인증**을 활성화합니다.
+2. Google 계정 → 보안 → **앱 비밀번호**를 발급받습니다(16자리).
+3. 그 값을 `.env`의 `SMTP_PASSWORD`에 넣습니다(일반 계정 비밀번호 아님).
+
+> `SMTP_PASSWORD`가 비어 있으면: 개발(`APP_ENV=development`)에서는 메일 발송 대신
+> 콘솔에 로그로 출력되어 흐름을 테스트할 수 있고, 운영(`APP_ENV=production`)에서는
+> 발송 시도 시 오류가 납니다. 운영 배포 전 반드시 앱 비밀번호를 설정하세요.
+
 ---
 
 ## 스키마 변경(마이그레이션) 워크플로

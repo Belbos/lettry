@@ -4,11 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { LottoNumberSet } from "@/components/lotto/LottoNumberSet";
 import { WinCheck } from "@/components/lotto/WinCheck";
+import { ResultNotice } from "@/components/common/ResultNotice";
 import { postRecommend } from "@/lib/api/recommend";
 import { ApiError } from "@/lib/api/client";
 import { useSettingsStore } from "@/lib/store/settingsStore";
 import { useHistoryStore } from "@/lib/store/historyStore";
 import { useAuthStore } from "@/lib/store/authStore";
+import { RECOMMEND_SUBTITLE, SITE_TITLE } from "@/lib/copy";
 import type { RecommendResponse } from "@/lib/types/recommendation";
 
 const STEP_LABEL: Record<string, string> = {
@@ -70,12 +72,8 @@ export default function HomePage() {
   return (
     <div className="space-y-8">
       <section className="text-center space-y-2">
-        <h1 className="text-2xl font-bold text-slate-900">
-          로또 번호 추천 (엔터테인먼트용)
-        </h1>
-        <p className="text-sm text-slate-600">
-          과거 당첨 데이터 기반 통계와 사용자 설정으로 번호 6개를 생성합니다.
-        </p>
+        <h1 className="text-2xl font-bold text-slate-900">{SITE_TITLE}</h1>
+        <p className="text-sm text-slate-600">{RECOMMEND_SUBTITLE}</p>
         <p className="text-xs text-slate-500">
           <Link href="/settings" className="underline underline-offset-2 hover:text-slate-700">
             알고리즘 설정 변경
@@ -123,14 +121,17 @@ export default function HomePage() {
             disabled={loading}
             className="px-6 py-3 rounded-xl bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 disabled:opacity-50"
           >
-            {loading ? "추천 중..." : "번호 추천 받기"}
+            {loading ? "생성 중..." : "번호 조합 생성"}
           </button>
         </div>
 
         {result && (
-          <div className="flex justify-center">
-            <WinCheck key={runId} numbers={result.numbers} />
-          </div>
+          <>
+            <ResultNotice />
+            <div className="flex justify-center">
+              <WinCheck key={runId} numbers={result.numbers} />
+            </div>
+          </>
         )}
       </section>
 

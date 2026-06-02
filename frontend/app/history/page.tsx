@@ -92,7 +92,7 @@ export default function HistoryPage() {
         </div>
       ) : entries.length === 0 ? (
         <div className="text-sm text-slate-500 bg-white border rounded-2xl p-8 text-center">
-          아직 추천 이력이 없습니다. 메인 화면에서 번호 추천을 받아보세요.
+          아직 생성된 번호 조합 이력이 없습니다. 메인 화면에서 번호 조합을 생성해 보세요.
         </div>
       ) : (
         <ul className="space-y-3">

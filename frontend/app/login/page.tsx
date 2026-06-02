@@ -31,7 +31,8 @@ function LoginForm() {
       const tokenRes = await login({ username, password });
       const userInfo = await fetchMe(tokenRes.access_token);
       setAuth(tokenRes.access_token, userInfo);
-      router.push("/");
+      // Temporary password issued → force a password reset before continuing.
+      router.push(userInfo.must_reset_password ? "/reset-password" : "/");
     } catch (err) {
       if (err instanceof ApiError) {
         const body = err.body as { detail?: string };
@@ -96,9 +97,15 @@ function LoginForm() {
         </button>
       </form>
 
-      <p className="text-center text-sm text-slate-500 mt-6">
+      <p className="text-center text-sm text-slate-500 mt-4">
+        <Link href="/forgot-password" className="text-blue-600 hover:underline">
+          비밀번호를 잊으셨나요?
+        </Link>
+      </p>
+
+      <p className="text-center text-sm text-slate-500 mt-2">
         계정이 없으신가요?{" "}
-        <Link href="/register" className="text-blue-600 hover:underline">
+        <Link href="/register/terms" className="text-blue-600 hover:underline">
           회원가입
         </Link>
       </p>
