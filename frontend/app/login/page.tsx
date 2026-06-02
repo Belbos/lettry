@@ -105,7 +105,7 @@ function LoginForm() {
 
       <p className="text-center text-sm text-slate-500 mt-2">
         계정이 없으신가요?{" "}
-        <Link href="/register" className="text-blue-600 hover:underline">
+        <Link href="/register/terms" className="text-blue-600 hover:underline">
           회원가입
         </Link>
       </p>

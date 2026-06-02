@@ -6,6 +6,7 @@ import Link from "next/link";
 import { register, checkUsername } from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/client";
 import { useAuthStore } from "@/lib/store/authStore";
+import { TERMS_AGREED_KEY } from "@/lib/legal";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -23,7 +24,14 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (user) router.replace("/");
+    if (user) {
+      router.replace("/");
+      return;
+    }
+    // Must pass through the terms-agreement screen first.
+    if (sessionStorage.getItem(TERMS_AGREED_KEY) !== "1") {
+      router.replace("/register/terms");
+    }
   }, [user, router]);
 
   const checkUsernameAvailability = useCallback(async (value: string) => {
@@ -77,7 +85,9 @@ export default function RegisterPage() {
         password,
         password_confirm: passwordConfirm,
         email,
+        terms_agreed: true,
       });
+      sessionStorage.removeItem(TERMS_AGREED_KEY);
       router.push("/login?registered=1");
     } catch (err) {
       if (err instanceof ApiError) {

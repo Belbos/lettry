@@ -19,6 +19,7 @@ class RegisterRequest(BaseModel):
     password: str
     password_confirm: str
     email: str
+    terms_agreed: bool = False
 
     @field_validator("username")
     @classmethod
@@ -48,6 +49,10 @@ class RegisterRequest(BaseModel):
     def passwords_match(self):
         if self.password != self.password_confirm:
             raise ValueError("비밀번호가 일치하지 않습니다")
+        # In model_validator so a missing field (default False) is rejected too;
+        # field_validator does not run for unset defaults in Pydantic v2.
+        if not self.terms_agreed:
+            raise ValueError("이용약관 및 개인정보 처리방침에 동의해야 합니다")
         return self
 
 
